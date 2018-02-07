@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Array.h"
 #include "Landscape.h"
 #include "string.h"
 #include "Developer/RawMesh/Public/RawMesh.h"
@@ -18,9 +19,6 @@ class TERRAINTESTING_API UMyFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 private:
-	//// reccursive Quicksort
-	//static void QuicksortR(FVector * buffer, size_t length);
-
 public:
 	UFUNCTION(BlueprintPure, DisplayName = "Get Landscape Stuff", Category = "Landscape Helpers")
 	static void GetMesh(ALandscape * landscape, int sampleLod, TArray<FVector> & points);
@@ -28,8 +26,7 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName = "Get Hello", Category = "Landscape Helpers")
 	static int GetHello() { return 1; }
 
-	//// Calls Reccursive Quicksort
-	//UFUNCTION(BlueprintCallable, DisplayName = "Quicksort", Category = "Landscape Helpers")
-	//static void BPQuicksort(TArray<FVector> & points);
-	
+	UFUNCTION(BlueprintCallable, DisplayName = "Sort")
+	static TArray<FVector> Sort(TArray<FVector> points);
+	static bool SortPredicate(const FVector & a, const FVector & b);
 };
