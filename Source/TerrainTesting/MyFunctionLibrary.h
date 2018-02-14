@@ -11,7 +11,7 @@
 #include "MyFunctionLibrary.generated.h"
 
 // This is a terrible macro but paramaters sidnt work
-#define INDEX_2D(x, y, width) y * size + x
+//#define INDEX_2D(x, y, width) y * size + x
 
 /**
  * 
@@ -22,7 +22,7 @@ class TERRAINTESTING_API UMyFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 private:
-	//static int Get1Das2D();
+	static int Get2DIndex(int x, int y, int width);
 public:
 	UFUNCTION(BlueprintPure, DisplayName = "Get Landscape Stuff", Category = "Landscape Helpers")
 	static void GetMesh(ALandscape * landscape, int sampleLod, TArray<FVector> & points);

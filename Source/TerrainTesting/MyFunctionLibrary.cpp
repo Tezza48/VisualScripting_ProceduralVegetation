@@ -41,6 +41,11 @@ bool UMyFunctionLibrary::SortPredicate(const FVector & a, const FVector & b)
 	}
 }
 
+int UMyFunctionLibrary::Get2DIndex(int x, int y, int width)
+{
+	return y * width + x;
+}
+
 TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positions)
 {
 	// Output array
@@ -48,10 +53,10 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 	// Width or Height
 	size_t size = sqrt(positions.Num());
 
-	size_t numDisp = 4;
-	FVector * displacement = new FVector[numDisp];
+	const size_t numDisp = 4;
+	FVector displacement[numDisp];
 
-	FVector * normalBuffer = new FVector[numDisp];
+	FVector normalBuffer[numDisp];
 
 	// Itterate positions through x and y
 	for (size_t y = 0; y < size; y++)
@@ -69,7 +74,7 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 			// the ymax is size -1 so i look for size -2
 			if (y < size - 2)
 			{
-				displacement[0] = positions[INDEX_2D(x, y+1, size)];
+				displacement[0] = positions[Get2DIndex(x, y+1, size)];
 			}
 			else
 			{
@@ -79,7 +84,7 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 			// Check Right
 			if (x < size - 2)
 			{
-				displacement[1] = positions[INDEX_2D(x + 1, y, size)];
+				displacement[1] = positions[Get2DIndex(x + 1, y, size)];
 			}
 			else
 			{
@@ -89,7 +94,7 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 			// Check Down
 			if (y > 0)
 			{
-				displacement[2] = positions[INDEX_2D(x, y - 1, size)];
+				displacement[2] = positions[Get2DIndex(x, y - 1, size)];
 			}
 			else
 			{
@@ -99,7 +104,7 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 			// Check Left
 			if (x > 0)
 			{
-				displacement[3] = positions[INDEX_2D(x - 1, y, size)];
+				displacement[3] = positions[Get2DIndex(x - 1, y, size)];
 			}
 			else
 			{
@@ -111,7 +116,9 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 			// Normalizing is possibly not needed
 			for (size_t i = 0; i < numDisp; i++)
 			{
-				displacement[i] -= positions[INDEX_2D(x, y, size)];
+				if (displacement[i].IsNormalized())
+					continue;
+				displacement[i] -= positions[Get2DIndex(x, y, size)];
 				displacement[i].Normalize();
 			}
 
@@ -134,13 +141,10 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 
 			// add sum / numDisp to the normals list
 			// Adds the average normal at this point to the list
-			Normals.Add(normalsSum / FVector(numDisp));
+			Normals.Add(-normalsSum / FVector(numDisp));
 
 		}
 	}
-
-	delete[] displacement;
-	delete[] normalBuffer;
 
 	return Normals;
 }
