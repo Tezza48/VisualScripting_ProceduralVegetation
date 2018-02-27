@@ -50,99 +50,40 @@ TArray<FVector> UMyFunctionLibrary::GenerateNormals(const TArray<FVector> positi
 {
 	// Output array
 	TArray<FVector> Normals;
+	for (size_t i = 0; i < positions.Num(); i++)
+	{
+		Normals.Add(FVector(0.f, 0.0f, 1.0f));
+	}
+
 	// Width or Height
 	size_t size = sqrt(positions.Num());
 
-	const size_t numDisp = 4;
-	FVector displacement[numDisp];
-
-	FVector normalBuffer[numDisp];
-
 	// Itterate positions through x and y
-	for (size_t y = 0; y < size; y++)
+	for (size_t y = 1; y < size - 1; y++)
 	{
-		for (size_t x = 0; x < size; x++)
+		for (size_t x = 1; x < size - 1; x++)
 		{
-			// Do not need to clear the array of displacements as i am overwriting each one
+			
+			FVector thisPos = positions[y * size + x];
 
-			// Add adjacent positions to array of displacements
-			// If the current position is on a boundary,
-			// set the unavailable position to 1 unit in that direction
+			FVector up = thisPos - positions[(y + 1) * size + x];
+			up.Normalize();
+			FVector right = thisPos - positions[y * size + (x + 1)];
+			right.Normalize();
 
-			// Check UP
-			// this position needs 1 above it 
-			// the ymax is size -1 so i look for size -2
-			if (y < size - 2)
-			{
-				displacement[0] = positions[Get2DIndex(x, y+1, size)];
-			}
-			else
-			{
-				displacement[0] = FVector(0.0f, 1.0f, 0.0f);
-			}
+			FVector normalA = FVector::CrossProduct(up, right);
 
-			// Check Right
-			if (x < size - 2)
-			{
-				displacement[1] = positions[Get2DIndex(x + 1, y, size)];
-			}
-			else
-			{
-				displacement[1] = FVector(1.0f, 0.0f, 0.0f);
-			}
+			FVector down = thisPos - positions[(y - 1) * size + x];
+			down.Normalize();
+			FVector left = thisPos - positions[y * size + (x - 1)];
+			left.Normalize();
 
-			// Check Down
-			if (y > 0)
-			{
-				displacement[2] = positions[Get2DIndex(x, y - 1, size)];
-			}
-			else
-			{
-				displacement[2] = FVector(0.0f, -1.0f, 0.0f);
-			}
+			FVector normalB = FVector::CrossProduct(down, left);
 
-			// Check Left
-			if (x > 0)
-			{
-				displacement[3] = positions[Get2DIndex(x - 1, y, size)];
-			}
-			else
-			{
-				displacement[3] = FVector(-1.0f, 0.0f, 0.0f);
-			}
+			FVector normalAvg = (normalA + normalB) / 2;
+			normalAvg.Normalize();
 
-			// subtract position to get displacement
-			// Normalize for good measure
-			// Normalizing is possibly not needed
-			for (size_t i = 0; i < numDisp; i++)
-			{
-				if (displacement[i].IsNormalized())
-					continue;
-				displacement[i] -= positions[Get2DIndex(x, y, size)];
-				displacement[i].Normalize();
-			}
-
-			// cross product with the next vector in the list
-			// working out the normals from the clockwise tangents
-			for (size_t i = 1; i < numDisp; i++)
-			{
-				normalBuffer[i] = FVector::CrossProduct(displacement[i - 1], displacement[i]);
-			}
-			// cross product of the last with the first
-			normalBuffer[0] = FVector::CrossProduct(displacement[numDisp - 1], displacement[0]);
-
-			// Average of vectors is component wise
-			// Add Components together
-			FVector normalsSum;
-			for (size_t i = 0; i < numDisp; i++)
-			{
-				normalsSum += normalBuffer[i];
-			}
-
-			// add sum / numDisp to the normals list
-			// Adds the average normal at this point to the list
-			Normals.Add(-normalsSum / FVector(numDisp));
-
+			Normals[y * size + x] = -normalAvg;
 		}
 	}
 
