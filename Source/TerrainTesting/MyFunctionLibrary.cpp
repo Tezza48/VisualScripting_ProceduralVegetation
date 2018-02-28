@@ -8,8 +8,18 @@ void UMyFunctionLibrary::GetMesh(ALandscape * landscape, int sampleLod,  TArray<
 	// Get the Vertex Data for all of the faces on the Landscape Mesh
 	// a higher SampleLOD will return a less detailed (lower vert) list
 	landscape->ExportToRawMesh(sampleLod, rawMesh);
-	// return the points using the Array referance
-	points = rawMesh.VertexPositions;
+
+	TArray<FVector> tempPoints = rawMesh.VertexPositions;
+
+	for (size_t i = 0; i < tempPoints.Num(); i++)
+	{
+		if (!points.Contains(tempPoints[i]))
+		{
+			points.Add(tempPoints[i]);
+		}
+	}
+
+	points.Sort(SortPredicate);
 }
 
 //https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Containers/TArray/index.html
