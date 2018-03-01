@@ -22,6 +22,34 @@ void UMyFunctionLibrary::GetMesh(ALandscape * landscape, int sampleLod,  TArray<
 	points.Sort(SortPredicate);
 }
 
+void UMyFunctionLibrary::GetMesh_Extended(ALandscape * landscape, int sampleLod,
+	TArray<FVector> & points, TArray<FVector> & normals,
+	TArray<FVector> & tangents, TArray<FVector> & cotangents)
+{
+	FRawMesh rawMesh;
+	// Get the Vertex Data for all of the faces on the Landscape Mesh
+	// a higher SampleLOD will return a less detailed (lower vert) list
+	landscape->ExportToRawMesh(sampleLod, rawMesh);
+
+
+	// Get positions
+	TArray<FVector> tempPoints = rawMesh.VertexPositions;
+
+	for (size_t i = 0; i < tempPoints.Num(); i++)
+	{
+		if (!points.Contains(tempPoints[i]))
+		{
+			points.Add(tempPoints[i]);
+		}
+	}
+
+	points.Sort(SortPredicate);
+
+	// Get Normals
+	normals = GenerateNormals(points);
+
+}
+
 //https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Containers/TArray/index.html
 TArray<FVector> UMyFunctionLibrary::Sort(TArray<FVector> points)
 {

@@ -26,6 +26,9 @@ private:
 public:
 	UFUNCTION(BlueprintPure, DisplayName = "Get Landscape Stuff", Category = "Landscape Helpers")
 	static void GetMesh(ALandscape * landscape, int sampleLod, TArray<FVector> & points);
+
+	UFUNCTION(BlueprintPure, DisplayName = "Get Landscape Stuff", Category = "Landscape Helpers")
+	static void GetMesh_Extended(ALandscape * landscape, int sampleLod, TArray<FVector> & points, TArray<FVector> & normals, TArray<FVector> & tangents, TArray<FVector> & cotangents);
 	
 	UFUNCTION(BlueprintCallable, DisplayName = "Get Hello", Category = "Landscape Helpers")
 	static int GetHello() { return 1; }
