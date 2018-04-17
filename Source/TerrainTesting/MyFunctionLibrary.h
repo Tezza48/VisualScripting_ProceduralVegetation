@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Array.h"
-#include "Landscape.h"
 #include "string.h"
-#include "Developer/RawMesh/Public/RawMesh.h"
+#include "Engine.h"
+#include "Array.h"
+#include "Runtime/Landscape/Classes/Landscape.h"
+#include "RawMesh.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "MyFunctionLibrary.generated.h"
 
